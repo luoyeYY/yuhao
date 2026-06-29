@@ -12,13 +12,11 @@ body{background:#f5f7fa;padding:20px;}
 .back{margin-bottom:20px;}
 .back a{color:var(--main);text-decoration:none;font-size:16px;}
 .detail{display:grid;grid-template-columns:240px 1fr;gap:30px;}
-.detail img{width:100%;border-radius:12px;background:#e8f4fb;}
+.detail img{width:100%;border-radius:12px;background:#e8f4fb;min-height:160px;}
 .info h1{font-size:24px;margin-bottom:10px;color:#222;}
 .tag{display:inline-block;background:#e8f4fb;color:var(--main);padding:5px 12px;border-radius:20px;font-size:14px;margin-bottom:15px;}
 .desc{line-height:1.9;color:#444;font-size:16px;white-space:pre-line;}
-@media(max-width:700px){
-    .detail{grid-template-columns:1fr;}
-}
+@media(max-width:700px){.detail{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -28,29 +26,19 @@ body{background:#f5f7fa;padding:20px;}
 </div>
 
 <script>
-function getProductById(id){
-    const cateList = JSON.parse(localStorage.getItem('cate') || '[]')
-    const proList = JSON.parse(localStorage.getItem('product')||[])
-    const target = proList.find(i=>i.id == id)
-    if(!target) return {name:"暂无产品",cateName:"",img:"",content:"暂无详情"}
-    const cate = cateList.find(c=>c.key === target.cate)
-    return {
-        ...target,
-        cateName: cate ? cate.name : target.cate,
-        desc: target.content || target.desc
-    }
-}
+const id = new URLSearchParams(location.search).get('id')
+const d = JSON.parse(localStorage.getItem('SITE_DATA')||'{"cate":[],"product":[],"news":[]}')
+const p = (d.product||[]).find(x=>x.id==id)||{name:'无',cate:'',img:'',content:'无'}
+const c = (d.cate||[]).find(x=>x.key===p.cate)||{name:''}
 
-const id=new URLSearchParams(location.search).get('id');
-const item=getProductById(id);
-document.getElementById('detail').innerHTML=`
-    <img src="${item.img}">
-    <div class="info">
-        <h1>${item.name}</h1>
-        <div class="tag">${item.cateName}</div>
-        <div class="desc">${item.desc}</div>
-    </div>
-`;
+document.getElementById('detail').innerHTML = `
+  <img src="${p.img}" alt="${p.name}">
+  <div class="info">
+    <h1>${p.name}</h1>
+    <div class="tag">${c.name}</div>
+    <div class="desc">${p.content}</div>
+  </div>
+`
 </script>
 </body>
 </html>
