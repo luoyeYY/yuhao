@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>渔好公司 - 后台管理</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei,sans-serif;}
+body{background:#f4f7fa;color:#333;}
+.login-mask{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{background:#fff;width:400px;padding:40px;border-radius:14px;box-shadow:0 5px 25px rgba(0,0,0,.15);}
+.login-box h3{text-align:center;margin-bottom:25px;color:#0969a8;}
+.login-box input{width:100%;height:46px;padding:0 15px;border:1px solid #ddd;border-radius:6px;margin-bottom:15px;font-size:15px;}
+.login-btn{width:100%;height:46px;background:#0969a8;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;}
+
+.container{max-width:1200px;margin:0 auto;padding:20px;display:none;}
+.admin-title{font-size:24px;margin-bottom:20px;color:#0969a8;}
+.tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:10px 20px;background:#fff;border:1px solid #ddd;border-radius:6px;cursor:pointer;}
+.tab.active{background:#0969a8;color:#fff;border-color:#0969a8;}
+.page{display:none;}
+.page.active{display:block;}
+
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);margin-bottom:20px;}
+.card-title{font-size:18px;margin-bottom:15px;color:#333;}
+.form-item{margin-bottom:15px;}
+.form-item label{display:block;margin-bottom:6px;font-weight:500;}
+.form-item input,.form-item select,.form-item textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;}
+.form-item textarea{height:120px;resize:none;}
+.btn{padding:10px 20px;background:#0969a8;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px;margin-bottom:6px;}
+.btn-danger{background:#d93030;}
+.table{width:100%;border-collapse:collapse;background:#fff;margin-top:10px;}
+.table th,.table td{padding:12px;text-align:left;border:1px solid #eee;}
+.table th{background:#f8f9fa;}
+.btns{display:flex;gap:6px;flex-wrap:wrap;}
+.img-preview{max-height:120px;margin-top:8px;border-radius:6px;display:none;border:1px solid #eee;}
+.upload-btn{padding:8px 14px;background:#eee;border:none;border-radius:6px;cursor:pointer;margin-right:6px;}
+</style>
+</head>
+
+<body>
+<div class="login-mask" id="loginMask">
+  <div class="login-box">
+    <h3>管理员登录</h3>
+    <input type="text" id="username" placeholder="账号" value="admin">
+    <input type="password" id="password" placeholder="密码" value="yuhao123">
+    <button class="login-btn" onclick="login()">登录</button>
+  </div>
+</div>
+
+<div class="container" id="main">
+  <div class="admin-title">渔好公司 后台管理系统</div>
+  <div class="tabs">
+    <div class="tab active" onclick="go('cate')">产品分类</div>
+    <div class="tab" onclick="go('product')">产品管理</div>
+    <div class="tab" onclick="go('news')">新闻管理</div>
+    <div class="tab" onclick="go('msg')">留言管理</div>
+  </div>
+
+  <!-- 分类 -->
+  <div id="page-cate" class="page active">
+    <div class="card">
+      <div class="card-title">新增分类</div>
+      <div class="form-item">
+        <label>分类标识（英文如 disinfect）</label>
+        <input id="cate_key" type="text">
+      </div>
+      <div class="form-item">
+        <label>分类名称（中文如 消毒杀菌类）</label>
+        <input id="cate_name" type="text">
+      </div>
+      <button class="btn" onclick="saveCate()">保存分类</button>
+    </div>
+    <div class="card">
+      <div class="card-title">分类列表</div>
+      <table class="table" id="cate_list"></table>
+    </div>
+  </div>
+
+  <!-- 产品 -->
+  <div id="page-product" class="page">
+    <div class="card">
+      <div class="card-title">新增/编辑产品</div>
+      <input type="hidden" id="pro_id">
+      <div class="form-item">
+        <label>产品名称</label>
+        <input id="pro_name" type="text">
+      </div>
+      <div class="form-item">
+        <label>所属分类</label>
+        <select id="pro_cate"></select>
+      </div>
+      <div class="form-item">
+        <label>产品图片（本地上传）</label>
+        <input type="file" id="pro_file" onchange="uploadProImg()" accept="image/*">
+        <img id="pro_preview" class="img-preview">
+        <input type="hidden" id="pro_img">
+      </div>
+      <div class="form-item">
+        <label>简短描述</label>
+        <input id="pro_desc" type="text">
+      </div>
+      <div class="form-item">
+        <label>详细介绍</label>
+        <textarea id="pro_content"></textarea>
+      </div>
+      <button class="btn" onclick="saveProduct()">保存产品</button>
+    </div>
+    <div class="card">
+      <div class="card-title">产品列表</div>
+      <table class="table" id="pro_list"></table>
+    </div>
+  </div>
+
+  <!-- 新闻 -->
+  <div id="page-news" class="page">
+    <div class="card">
+      <div class="card-title">新增/编辑新闻</div>
+      <input type="hidden" id="news_id">
+      <div class="form-item">
+        <label>新闻标题</label>
+        <input id="news_title" type="text">
+      </div>
+      <div class="form-item">
+        <label>新闻封面（本地上传）</label>
+        <input type="file" id="news_file" onchange="uploadNewsImg()" accept="image/*">
+        <img id="news_preview" class="img-preview">
+        <input type="hidden" id="news_img">
+      </div>
+      <div class="form-item">
+        <label>发布日期</label>
+        <input id="news_date" type="text">
+      </div>
+      <div class="form-item">
+        <label>简短描述</label>
+        <input id="news_desc" type="text">
+      </div>
+      <div class="form-item">
+        <label>新闻详情</label>
+        <textarea id="news_content"></textarea>
+      </div>
+      <button class="btn" onclick="saveNews()">保存新闻</button>
+    </div>
+    <div class="card">
+      <div class="card-title">新闻列表</div>
+      <table class="table" id="news_list"></table>
+    </div>
+  </div>
+
+  <!-- 留言 -->
+  <div id="page-msg" class="page">
+    <div class="card">
+      <div class="card-title">用户留言列表</div>
+      <table class="table" id="msg_list"></table>
+    </div>
+  </div>
+</div>
+
+<script>
+const USER = 'admin'
+const PWD  = 'yuhao123'
+
+// 后台打开自动初始化示例数据
+function initDemoData(){
+  if(!localStorage.getItem('cate')){
+    localStorage.setItem('cate',JSON.stringify([
+      {key:"disinfect",name:"消毒杀菌类"},
+      {key:"water",name:"水质改良类"}
+    ]))
+  }
+  if(!localStorage.getItem('product')){
+    localStorage.setItem('product',JSON.stringify([
+      {id:1,name:"高效水体消毒液",cate:"disinfect",img:"https://img0.baidu.com/it/u=123456,789012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",desc:"快速杀灭水体有害菌，净化水质，不伤鱼虾",content:"高效水体消毒液专为水产养殖设计，广谱杀菌、快速净水，无残留、不伤水体生态，适用于鱼虾蟹各类养殖池塘。"},
+      {id:2,name:"池塘水质改良剂",cate:"water",img:"https://img2.baidu.com/it/u=223456,889012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",desc:"降解氨氮亚盐，改善水体浑浊",content:"有效降解池塘氨氮、亚硝酸盐、硫化氢等有害物质，澄清水质、稳定水色，长期使用可维持水体微生态平衡。"},
+      {id:3,name:"内服保肝护胆保健品",cate:"disinfect",img:"https://img1.baidu.com/it/u=323456,989012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",desc:"养护肝胆，增强鱼虾体质",content:"精选天然植物成分，保肝护胆、增强机体免疫力，减少病害发生，提升成活率。"}
+    ]))
+  }
+  if(!localStorage.getItem('news')){
+    localStorage.setItem('news',JSON.stringify([
+      {id:1,title:"夏季池塘水质管理技巧",img:"https://img0.baidu.com/it/u=423456,189012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",date:"2026-05-10",desc:"高温季节水体易变质，教你科学调水",content:"夏季气温升高，池塘水温上升，水体藻类爆发、有害物质堆积快。定期消毒、合理改底、及时补菌是高温养殖关键。本文详细讲解夏季养殖水质维护全套方案。"},
+      {id:2,title:"水产养殖杀菌消毒注意事项",img:"https://img2.baidu.com/it/u=523456,289012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",date:"2026-06-01",desc:"科学杀菌，避免药害、提升成活率",content:"水产消毒切忌盲目用药，不同季节、不同养殖品种适用药剂不同。合理配比、规范使用，既能防病，又能保护水体生态。"}
+    ]))
+  }
+}
+
+function login() {
+  initDemoData()
+  let u = document.getElementById('username').value
+  let p = document.getElementById('password').value
+  if (u === USER && p === PWD) {
+    document.getElementById('loginMask').style.display = 'none'
+    document.getElementById('main').style.display = 'block'
+    loadAll()
+  } else {
+    alert('账号或密码错误')
+  }
+}
+
+function broadcastRefresh(){
+  localStorage.setItem('siteRefresh', Date.now())
+}
+
+function go(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
+  document.getElementById('page-'+page).classList.add('active')
+  event.target.classList.add('active')
+  loadAll()
+}
+
+function get(k){return JSON.parse(localStorage.getItem(k)||'[]')}
+function set(k,d){localStorage.setItem(k,JSON.stringify(d))}
+
+// ================== 图片本地上传转 Base64 ==================
+function uploadProImg(){
+  const file = document.getElementById('pro_file').files[0]
+  if(!file) return
+  const reader = new FileReader()
+  reader.onload = e=>{
+    document.getElementById('pro_img').value = e.target.result
+    const img = document.getElementById('pro_preview')
+    img.src = e.target.result
+    img.style.display = 'block'
+  }
+  reader.readAsDataURL(file)
+}
+
+function uploadNewsImg(){
+  const file = document.getElementById('news_file').files[0]
+  if(!file) return
+  const reader = new FileReader()
+  reader.onload = e=>{
+    document.getElementById('news_img').value = e.target.result
+    const img = document.getElementById('news_preview')
+    img.src = e.target.result
+    img.style.display = 'block'
+  }
+  reader.readAsDataURL(file)
+}
+
+// ================== 分类 ==================
+function saveCate(){
+  let key = document.getElementById('cate_key').value.trim()
+  let name = document.getElementById('cate_name').value.trim()
+  if(!key||!name)return alert('请填写完整')
+  let list=get('cate')
+  if(list.some(i=>i.key===key))return alert('标识已存在')
+  list.push({key,name})
+  set('cate',list)
+  broadcastRefresh()
+  document.getElementById('cate_key').value=''
+  document.getElementById('cate_name').value=''
+  loadCate()
+}
+function loadCate(){
+  let list=get('cate')
+  let sel=document.getElementById('pro_cate')
+  sel.innerHTML=''
+  list.forEach(i=>{sel.innerHTML+=`<option value="${i.key}">${i.name}</option>`})
+  let html=''
+  list.forEach((i,idx)=>{html+=`<tr><td>${i.key}</td><td>${i.name}</td><td><button class="btn btn-danger" onclick="delCate(${idx})">删除</button></td></tr>`})
+  document.getElementById('cate_list').innerHTML=html
+}
+function delCate(idx){if(!confirm('确定？'))return;let list=get('cate');list.splice(idx,1);set('cate',list);broadcastRefresh();loadCate()}
+
+// ================== 产品 ==================
+function saveProduct(){
+  let id=document.getElementById('pro_id').value
+  let name=document.getElementById('pro_name').value
+  let cate=document.getElementById('pro_cate').value
+  let img=document.getElementById('pro_img').value
+  let desc=document.getElementById('pro_desc').value
+  let content=document.getElementById('pro_content').value
+  if(!name||!cate)return alert('名称和分类必填')
+  let list=get('product')
+  if(id){
+    let i=list.findIndex(x=>x.id==id)
+    list[i]={...list[i],name,cate,img,desc,content}
+  }else{
+    let newId=list.length?Math.max(...list.map(x=>x.id))+1:1
+    list.push({id:newId,name,cate,img,desc,content})
+  }
+  set('product',list)
+  broadcastRefresh()
+  clearPro()
+  loadPro()
+}
+function editPro(id){
+  let d=get('product').find(x=>x.id==id)
+  document.getElementById('pro_id').value=d.id
+  document.getElementById('pro_name').value=d.name
+  document.getElementById('pro_cate').value=d.cate
+  document.getElementById('pro_img').value=d.img||''
+  document.getElementById('pro_preview').src=d.img||''
+  document.getElementById('pro_preview').style.display=d.img?'block':'none'
+  document.getElementById('pro_desc').value=d.desc||''
+  document.getElementById('pro_content').value=d.content||''
+}
+function delPro(id){if(!confirm('确定？'))return;set('product',get('product').filter(x=>x.id!=id));broadcastRefresh();loadPro()}
+function clearPro(){
+  document.getElementById('pro_id').value=''
+  document.getElementById('pro_name').value=''
+  document.getElementById('pro_img').value=''
+  document.getElementById('pro_file').value=''
+  document.getElementById('pro_preview').style.display='none'
+  document.getElementById('pro_desc').value=''
+  document.getElementById('pro_content').value=''
+}
+function loadPro(){
+  let cate=get('cate')
+  let list=get('product')
+  let html=''
+  list.forEach(d=>{
+    let c=cate.find(i=>i.key===d.cate)
+    let cn=c?c.name:d.cate
+    html+=`<tr><td>${d.name}</td><td>${cn}</td><td>${d.desc||'-'}</td><td><button class="btn" onclick="editPro(${d.id})">编辑</button><button class="btn btn-danger" onclick="delPro(${d.id})">删除</button></td></tr>`
+  })
+  document.getElementById('pro_list').innerHTML=html
+}
+
+// ================== 新闻 ==================
+function saveNews(){
+  let id=document.getElementById('news_id').value
+  let title=document.getElementById('news_title').value
+  let img=document.getElementById('news_img').value
+  let date=document.getElementById('news_date').value
+  let desc=document.getElementById('news_desc').value
+  let content=document.getElementById('news_content').value
+  if(!title)return alert('标题必填')
+  let list=get('news')
+  if(id){
+    let i=list.findIndex(x=>x.id==id)
+    list[i]={...list[i],title,img,date,desc,content}
+  }else{
+    let newId=list.length?Math.max(...list.map(x=>x.id))+1:1
+    list.push({id:newId,title,img,date,desc,content})
+  }
+  set('news',list)
+  broadcastRefresh()
+  clearNews()
+  loadNews()
+}
+function editNews(id){
+  let d=get('news').find(x=>x.id==id)
+  document.getElementById('news_id').value=d.id
+  document.getElementById('news_title').value=d.title
+  document.getElementById('news_img').value=d.img||''
+  document.getElementById('news_preview').src=d.img||''
+  document.getElementById('news_preview').style.display=d.img?'block':'none'
+  document.getElementById('news_date').value=d.date||''
+  document.getElementById('news_desc').value=d.desc||''
+  document.getElementById('news_content').value=d.content||''
+}
+function delNews(id){if(!confirm('确定？'))return;set('news',get('news').filter(x=>x.id!=id));broadcastRefresh();loadNews()}
+function clearNews(){
+  document.getElementById('news_id').value=''
+  document.getElementById('news_title').value=''
+  document.getElementById('news_img').value=''
+  document.getElementById('news_file').value=''
+  document.getElementById('news_preview').style.display='none'
+  document.getElementById('news_date').value=''
+  document.getElementById('news_desc').value=''
+  document.getElementById('news_content').value=''
+}
+function loadNews(){
+  let list=get('news')
+  let html=''
+  list.forEach(d=>{html+=`<tr><td>${d.title}</td><td>${d.date||'-'}</td><td>${d.desc||'-'}</td><td><button class="btn" onclick="editNews(${d.id})">编辑</button><button class="btn btn-danger" onclick="delNews(${d.id})">删除</button></td></tr>`})
+  document.getElementById('news_list').innerHTML=html
+}
+
+// ================== 留言 ==================
+function loadMsg(){
+  let list=get('message')
+  let html=''
+  list.forEach((m,i)=>{html+=`<tr><td>${m.name}</td><td>${m.phone}</td><td>${m.title}</td><td>${m.time}</td><td><button class="btn btn-danger" onclick="delMsg(${i})">删除</button></td></tr>`})
+  document.getElementById('msg_list').innerHTML=html
+}
+function delMsg(idx){if(!confirm('删除？'))return;let list=get('message');list.splice(idx,1);set('message',list);loadMsg()}
+
+function loadAll(){loadCate();loadPro();loadNews();loadMsg()}
+</script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>渔好公司 - 专业鱼药与水产养殖解决方案</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif;}
+:root{--main:#0969a8;--dark:#054b79;--light:#e8f4fb;--gray:#f5f7fa;}
+body{background:var(--gray);color:#333;line-height:1.7;}
+a{text-decoration:none;color:inherit;}
+ul{list-style:none;}
+.container{max-width:1200px;margin:0 auto;padding:0 20px;}
+.section{padding:70px 0;}
+.title{text-align:center;margin-bottom:50px;}
+.title h2{font-size:32px;color:var(--dark);position:relative;padding-bottom:15px;}
+.title h2::after{content:"";width:70px;height:3px;background:var(--main);position:absolute;bottom:0;left:50%;transform:translateX(-50%);}
+.title p{color:#666;margin-top:10px;}
+
+header{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.1);position:sticky;top:0;z-index:99;}
+.nav{display:flex;justify-content:space-between;align-items:center;height:75px;}
+.logo{font-size:24px;font-weight:bold;color:var(--dark);}
+.menu{display:flex;gap:30px;}
+.menu a{font-size:16px;font-weight:500;transition:.3s;}
+.menu a:hover{color:var(--main);}
+
+.banner{background:linear-gradient(135deg,#054b79,#0969a8);color:#fff;padding:100px 0;text-align:center;}
+.banner h1{font-size:42px;margin-bottom:20px;}
+.banner p{max-width:700px;margin:0 auto;font-size:17px;opacity:.95;}
+
+.product{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:25px;}
+.pro-item{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 3px 15px rgba(0,0,0,0.08);transition:.3s;cursor:pointer;}
+.pro-item:hover{transform:translateY(-5px);}
+.pro-item img{width:100%;height:190px;object-fit:cover;background:var(--light);}
+.pro-info{padding:20px;}
+.pro-tag{font-size:13px;color:var(--main);margin-bottom:8px;}
+.pro-name{font-size:18px;font-weight:bold;color:#222;margin-bottom:10px;}
+.pro-desc{font-size:14px;color:#666;line-height:1.6;}
+
+.news{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:25px;}
+.news-item{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 3px 15px rgba(0,0,0,0.08);cursor:pointer;}
+.news-item img{width:100%;height:200px;object-fit:cover;}
+.news-info{padding:20px;}
+.news-date{font-size:13px;color:var(--main);margin-bottom:8px;}
+.news-title{font-size:17px;font-weight:bold;margin-bottom:10px;}
+.news-desc{font-size:14px;color:#666;}
+
+.message{background:#fff;border-radius:15px;padding:40px;box-shadow:0 3px 15px rgba(0,0,0,0.08);max-width:800px;margin:0 auto;}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.form input,.form textarea{padding:12px 15px;border:1px solid #eee;border-radius:6px;font-size:15px;}
+.form textarea{height:120px;resize:none;grid-column:span 2;}
+.submit{grid-column:span 2;background:var(--main);color:#fff;border:none;padding:14px;border-radius:6px;font-size:16px;cursor:pointer;}
+
+.about{background:#fff;border-radius:15px;padding:40px;box-shadow:0 3px 15px rgba(0,0,0,0.08);line-height:1.8;}
+.contact{background:var(--dark);color:#fff;text-align:center;padding:40px;border-radius:15px;margin:40px auto;max-width:1000px;}
+.contact p{margin:10px 0;font-size:16px;}
+footer{background:#033554;color:#ccc;text-align:center;padding:30px 0;margin-top:30px;font-size:14px;}
+@media(max-width:768px){.menu{display:none;}.form{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="container">
+<div class="nav">
+<div class="logo">渔好公司</div>
+<ul class="menu">
+<li><a href="index.html">首页</a></li>
+<li><a href="product.html">产品中心</a></li>
+<li><a href="#news">新闻动态</a></li>
+<li><a href="#message">在线留言</a></li>
+<li><a href="#about">关于我们</a></li>
+<li><a href="#contact">联系我们</a></li>
+</ul>
+</div>
+</div>
+</header>
+
+<section class="banner" id="home">
+<div class="container">
+<h1>专注水产健康 · 守护养殖丰收</h1>
+<p>渔好专业研发生产鱼药、水质改良、消毒杀菌、内服保健产品，为全国养殖户提供全套养殖解决方案。</p>
+</div>
+</section>
+
+<section class="section" style="background:#fff;">
+<div class="container">
+<div class="title"><h2>精选产品</h2><p>合规安全、高效低残</p></div>
+<div class="product" id="hotProduct"></div>
+<div style="text-align:center;margin-top:30px;">
+<a href="product.html" style="display:inline-block;padding:12px 30px;background:var(--main);color:#fff;border-radius:6px;">查看全部产品</a>
+</div>
+</div>
+</section>
+
+<section class="section" id="news">
+<div class="container">
+<div class="title"><h2>新闻动态</h2><p>养殖技术、行业资讯</p></div>
+<div class="news" id="newsList"></div>
+</div>
+</section>
+
+<section class="section" id="message">
+<div class="container">
+<div class="title"><h2>在线留言</h2><p>产品咨询、合作洽谈</p></div>
+<div class="message">
+<form class="form" id="msgForm">
+<input type="text" name="name" placeholder="您的姓名" required>
+<input type="text" name="phone" placeholder="联系电话" required>
+<input type="text" name="area" placeholder="所在地区" required>
+<input type="text" name="title" placeholder="留言主题" required>
+<textarea name="content" placeholder="请输入留言内容" required></textarea>
+<button type="submit" class="submit">提交留言</button>
+</form>
+</div>
+</div>
+</section>
+
+<section class="section" id="about">
+<div class="container">
+<div class="title"><h2>关于渔好</h2></div>
+<div class="about">
+<p>渔好公司是一家集研发、生产、销售、技术服务于一体的现代化水产药品企业。拥有正规生产资质，产品涵盖消毒剂、水质改良剂、内服保健品、杀虫剂等系列，严格遵循国家兽药标准，绿色安全、高效无残留。</p>
+<p>公司深耕水产养殖行业多年，依托专业技术团队，持续迭代优质产品，针对鱼虾蟹各类养殖场景提供针对性解决方案，帮助养殖户降低养殖风险、提升养殖产量，赢得了全国各地客户的信赖与支持。</p>
+</div>
+</div>
+</section>
+
+<section class="container" id="contact">
+<div class="contact">
+<h2 style="margin-bottom:20px;">联系我们</h2>
+<p><i class="fas fa-phone"></i> 电话：138XXXX8888</p>
+<p><i class="fas fa-envelope"></i> 邮箱：yuhao@163.com</p>
+<p><i class="fas fa-map-marker-alt"></i> 地址：XX省XX市水产养殖产业园</p>
+</div>
+</section>
+
+<footer>
+<p>© 2026 渔好公司 版权所有</p>
+</footer>
+
+<script>
+// 初始化默认示例数据（第一次打开自动生成）
+function initDemoData(){
+  if(!localStorage.getItem('cate')){
+    localStorage.setItem('cate',JSON.stringify([
+      {key:"disinfect",name:"消毒杀菌类"},
+      {key:"water",name:"水质改良类"}
+    ]))
+  }
+  if(!localStorage.getItem('product')){
+    localStorage.setItem('product',JSON.stringify([
+      {id:1,name:"高效水体消毒液",cate:"disinfect",img:"https://img0.baidu.com/it/u=123456,789012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",desc:"快速杀灭水体有害菌，净化水质，不伤鱼虾",content:"高效水体消毒液专为水产养殖设计，广谱杀菌、快速净水，无残留、不伤水体生态，适用于鱼虾蟹各类养殖池塘。"},
+      {id:2,name:"池塘水质改良剂",cate:"water",img:"https://img2.baidu.com/it/u=223456,889012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",desc:"降解氨氮亚盐，改善水体浑浊",content:"有效降解池塘氨氮、亚硝酸盐、硫化氢等有害物质，澄清水质、稳定水色，长期使用可维持水体微生态平衡。"},
+      {id:3,name:"内服保肝护胆保健品",cate:"disinfect",img:"https://img1.baidu.com/it/u=323456,989012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",desc:"养护肝胆，增强鱼虾体质",content:"精选天然植物成分，保肝护胆、增强机体免疫力，减少病害发生，提升成活率。"}
+    ]))
+  }
+  if(!localStorage.getItem('news')){
+    localStorage.setItem('news',JSON.stringify([
+      {id:1,title:"夏季池塘水质管理技巧",img:"https://img0.baidu.com/it/u=423456,189012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",date:"2026-05-10",desc:"高温季节水体易变质，教你科学调水",content:"夏季气温升高，池塘水温上升，水体藻类爆发、有害物质堆积快。定期消毒、合理改底、及时补菌是高温养殖关键。本文详细讲解夏季养殖水质维护全套方案。"},
+      {id:2,title:"水产养殖杀菌消毒注意事项",img:"https://img2.baidu.com/it/u=523456,289012&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",date:"2026-06-01",desc:"科学杀菌，避免药害、提升成活率",content:"水产消毒切忌盲目用药，不同季节、不同养殖品种适用药剂不同。合理配比、规范使用，既能防病，又能保护水体生态。"}
+    ]))
+  }
+}
+
+// 读取分类+产品+新闻统一数据
+function getData(){
+    initDemoData()
+    const cateList = JSON.parse(localStorage.getItem('cate') || '[]')
+    const productRaw = JSON.parse(localStorage.getItem('product')||[])
+    const newsRaw = JSON.parse(localStorage.getItem('news')||[])
+    const products = productRaw.map(p=>{
+        const matchCate = cateList.find(c=>c.key === p.cate)
+        return {
+            ...p,
+            cateName: matchCate ? matchCate.name : p.cate
+        }
+    })
+    return {products,news:newsRaw}
+}
+
+function renderHot(){
+    const d=getData();
+    const p=document.getElementById('hotProduct');
+    let html='';
+    d.products.slice(0,3).forEach(i=>{
+        html+=`<div class="pro-item" onclick="location.href='product-detail.html?id=${i.id}'">
+            <img src="${i.img}">
+            <div class="pro-info">
+                <div class="pro-tag">${i.cateName}</div>
+                <div class="pro-name">${i.name}</div>
+                <div class="pro-desc">${i.desc}</div>
+            </div>
+        </div>`;
+    });
+    p.innerHTML=html;
+}
+
+function renderNews(){
+    const d=getData();
+    const n=document.getElementById('newsList');
+    let html='';
+    d.news.forEach(i=>{
+        html+=`<div class="news-item" onclick="location.href='news-detail.html?id=${i.id}'">
+            <img src="${i.img}">
+            <div class="news-info">
+                <div class="news-date">${i.date}</div>
+                <div class="news-title">${i.title}</div>
+                <div class="news-desc">${i.desc}</div>
+            </div>
+        </div>`;
+    });
+    n.innerHTML=html;
+}
+
+document.getElementById('msgForm').onsubmit=e=>{
+    e.preventDefault();
+    const m=Object.fromEntries(new FormData(e.target));
+    m.time=new Date().toLocaleString();
+    localStorage.setItem('message',JSON.stringify([...JSON.parse(localStorage.getItem('message')||'[]'),m]));
+    alert('留言成功');e.target.reset();
+}
+
+// 监听后台修改数据自动刷新
+window.addEventListener('storage',function(e){
+    if(e.key === 'siteRefresh'){
+        renderHot()
+        renderNews()
+    }
+})
+
+window.onload=()=>{renderHot();renderNews();}
+</script>
+</body>
+</html>
