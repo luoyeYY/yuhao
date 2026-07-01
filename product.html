@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品中心</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif;}
+:root{--main:#0969a8;--dark:#054b79;}
+body{background:#f5f7fa;color:#333;line-height:1.7;}
+a{text-decoration:none;color:inherit;}
+.container{max-width:1200px;margin:0 auto;padding:0 20px;}
+header{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.1);position:sticky;top:0;z-index:99;}
+.nav{display:flex;justify-content:space-between;align-items:center;height:75px;}
+.logo{font-size:24px;font-weight:bold;color:var(--dark);}
+.menu{display:flex;gap:30px;}
+.menu a{font-size:16px;font-weight:500;}
+.menu a:hover{color:var(--main);}
+.title{text-align:center;margin:40px 0;}
+.title h1{font-size:32px;color:var(--dark);}
+.cate{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;margin:30px 0;}
+.cate span{padding:10px 25px;background:#fff;border-radius:30px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.05);transition:.3s;}
+.cate span.active,.cate span:hover{background:var(--main);color:#fff;}
+.product{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:25px;margin-bottom:40px;}
+.pro-item{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 3px 15px rgba(0,0,0,0.08);transition:.3s;cursor:pointer;}
+.pro-item:hover{transform:translateY(-5px);}
+.pro-item img{width:100%;height:190px;object-fit:cover;background:#e8f4fb;}
+.pro-info{padding:20px;}
+.pro-tag{font-size:13px;color:var(--main);margin-bottom:8px;}
+.pro-name{font-size:18px;font-weight:bold;margin-bottom:10px;}
+.pro-desc{font-size:14px;color:#666;}
+footer{background:#033554;color:#ccc;text-align:center;padding:30px 0;margin-top:30px;font-size:14px;}
+</style>
+</head>
+<body>
+<header>
+<div class="container">
+<div class="nav">
+<div class="logo">渔好公司</div>
+<ul class="menu">
+<li><a href="index.html">首页</a></li>
+<li><a href="product.html">产品中心</a></li>
+<li><a href="index.html#news">新闻动态</a></li>
+<li><a href="index.html#about">关于我们</a></li>
+<li><a href="index.html#contact">联系我们</a></li>
+</ul>
+</div>
+</div>
+</header>
+
+<div class="title"><h1>产品中心</h1></div>
+<div class="container">
+<div class="cate" id="cateWrap"></div>
+<div class="product" id="productList"></div>
+</div>
+
+<footer>© 2026 渔好公司</footer>
+
+<script>
+function getData(){
+  const d = JSON.parse(localStorage.getItem('SITE_DATA')||'{"cate":[],"product":[],"news":[]}')
+  return {
+    cateList: d.cate||[],
+    products: (d.product||[]).map(p=>{
+      const c = (d.cate||[]).find(x=>x.key===p.cate)
+      return {...p,cateName:c?c.name:p.cate}
+    })
+  }
+}
+
+function renderCate(){
+  const {cateList} = getData()
+  let html = `<span class="active" data-cate="all">全部产品</span>`
+  cateList.forEach(c=>{ html+=`<span data-cate="${c.key}">${c.name}</span>` })
+  document.getElementById('cateWrap').innerHTML = html
+  document.querySelectorAll('#cateWrap span').forEach(s=>{
+    s.onclick = ()=>{
+      document.querySelectorAll('#cateWrap span').forEach(i=>i.classList.remove('active'))
+      s.classList.add('active')
+      renderList(s.dataset.cate)
+    }
+  })
+}
+
+function renderList(key){
+  const {products} = getData()
+  const arr = key==='all' ? products : products.filter(p=>p.cate===key)
+  let html = ''
+  arr.forEach(i=>{
+    html+=`<div class="pro-item" onclick="location.href='product-detail.html?id=${i.id}'">
+      <img src="${i.img}" alt="${i.name}">
+      <div class="pro-info">
+        <div class="pro-tag">${i.cateName}</div>
+        <div class="pro-name">${i.name}</div>
+        <div class="pro-desc">${i.desc}</div>
+      </div>
+    </div>`
+  })
+  document.getElementById('productList').innerHTML = html
+}
+
+window.onload = ()=>{ renderCate(); renderList('all') }
+</script>
+</body>
+</html>

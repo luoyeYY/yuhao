@@ -1,381 +1,130 @@
 <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
 <meta charset="UTF-8">
-<title>渔好水产 - 管理后台</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>后台管理</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-*{box-sizing:border-box;font-family:Microsoft YaHei,sans-serif;}
-body{background:#f1f5f9;margin:0;padding:0;}
-
-/* 登录 */
-.login{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;display:flex;align-items:center;justify-content:center;z-index:999;}
-.login-box{width:420px;padding:40px;background:#fff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.08);}
-.login-box h2{text-align:center;margin-bottom:30px;color:#1e40af;}
-input,select,textarea,button{width:100%;padding:14px;margin-bottom:16px;border:1px solid #ddd;border-radius:10px;font-size:15px;}
-button{background:#2563eb;color:#fff;border:none;cursor:pointer;}
-.sec-btn{background:#64748b;}
-.hide-input{display:none;opacity:0;height:0;width:0;padding:0;margin:0;border:0;}
-
-/* 顶部导航 */
-.navbar{background:#fff;padding:0 20px;box-shadow:0 2px 6px rgba(0,0,0,0.05);display:flex;gap:2px;}
-.nav-item{padding:16px 24px;cursor:pointer;font-size:15px;transition:.2s;}
-.nav-item.active{background:#2563eb;color:#fff;}
-
-/* 容器 */
+*{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei,sans-serif;}
+body{background:#f4f7fa;color:#333;}
+.login-mask{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{background:#fff;width:400px;padding:40px;border-radius:14px;box-shadow:0 5px 25px rgba(0,0,0,.15);}
+.login-box h3{text-align:center;margin-bottom:25px;color:#0969a8;}
+.login-box input{width:100%;height:46px;padding:0 15px;border:1px solid #ddd;border-radius:6px;margin-bottom:15px;font-size:15px;}
+.login-btn{width:100%;height:46px;background:#0969a8;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;}
 .container{max-width:1200px;margin:0 auto;padding:20px;display:none;}
+.admin-title{font-size:24px;margin-bottom:20px;color:#0969a8;}
+.tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:10px 20px;background:#fff;border:1px solid #ddd;border-radius:6px;cursor:pointer;}
+.tab.active{background:#0969a8;color:#fff;border-color:#0969a8;}
 .page{display:none;}
 .page.active{display:block;}
-
-.card{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-.card h3{margin-top:0;color:#2563eb;font-size:18px;}
-.table{width:100%;border-collapse:collapse;margin-top:10px;}
-.table th,.table td{padding:12px;text-align:left;border-bottom:1px solid #eee;}
-.table th{background:#f8fafc;}
-.del{background:#ef4444;padding:6px 10px;border-radius:6px;color:#fff;font-size:13px;border:none;margin-left:4px;}
-.edit{background:#2563eb;padding:6px 10px;border-radius:6px;color:#fff;font-size:13px;border:none;}
-.upload{padding:10px;background:#f0f7ff;border:1px dashed #2563eb;border-radius:8px;margin:10px 0;cursor:pointer;text-align:center;}
-.preview{margin:10px 0;text-align:center;}
-.preview img{max-width:160px;max-height:160px;border-radius:8px;object-fit:cover;}
-.flex-row{display:flex;gap:10px;align-items:center;}
-.flex-row input{margin:0;flex:1;}
-.flex-row button{width:auto;margin:0;}
-.edit-form{display:none;border:1px dashed #2563eb;padding:18px;border-radius:10px;margin:20px 0;}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);margin-bottom:20px;}
+.card-title{font-size:18px;margin-bottom:15px;color:#333;}
+.form-item{margin-bottom:15px;}
+.form-item label{display:block;margin-bottom:6px;font-weight:500;}
+.form-item input,.form-item select,.form-item textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;}
+.form-item textarea{height:120px;resize:none;}
+.btn{padding:10px 20px;background:#0969a8;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:6px;margin-bottom:6px;}
+.btn-danger{background:#d93030;}
+.table{width:100%;border-collapse:collapse;background:#fff;margin-top:10px;}
+.table th,.table td{padding:12px;text-align:left;border:1px solid #eee;}
+.table th{background:#f8f9fa;}
+.btns{display:flex;gap:6px;flex-wrap:wrap;}
+.img-preview{max-height:120px;margin-top:8px;border-radius:6px;display:none;}
+.export-area{margin-top:20px;}
+#result{width:100%;height:240px;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:monospace;}
 </style>
-
-<div class="login" id="login">
-    <div class="login-box">
-        <h2>管理员登录</h2>
-        <!-- 隐藏干扰密码框，阻止浏览器自动填充 -->
-        <input class="hide-input" type="password" autocomplete="new-password">
-        <!-- 移除value默认填充，关闭自动填充 -->
-        <input id="user" placeholder="账号" autocomplete="off">
-        <input id="pwd" placeholder="密码" type="password" autocomplete="new-password">
-        <button onclick="login()">登录</button>
-    </div>
+</head>
+<body>
+<div class="login-mask" id="loginMask">
+  <div class="login-box">
+    <h3>管理员登录</h3>
+    <input type="text" id="user" value="admin">
+    <input type="password" id="pwd" value="yuhao123">
+    <button class="login-btn" onclick="login()">登录</button>
+  </div>
 </div>
 
-<div class="navbar" id="navbar" style="display:none;">
-    <div class="nav-item active" onclick="switchPage('cate')">产品分类</div>
-    <div class="nav-item" onclick="switchPage('product')">产品管理</div>
-    <div class="nav-item" onclick="switchPage('news')">新闻管理</div>
-</div>
+<div class="container" id="main">
+  <div class="admin-title">后台管理</div>
+  <div class="card export-area">
+    <div class="card-title">一键导出 → 复制替换 index.html 中 SITE_DATA</div>
+    <button class="btn" onclick="exportData()">导出数据</button>
+    <textarea id="result"></textarea>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="go('cate')">分类</div>
+    <div class="tab" onclick="go('product')">产品</div>
+    <div class="tab" onclick="go('news')">新闻</div>
+  </div>
 
-<div class="container" id="container">
-
-    <!-- 产品分类 -->
-    <div class="page active" id="page-cate">
-        <div class="card">
-            <h3>产品分类管理</h3>
-            <div class="flex-row">
-                <input id="cateName" placeholder="分类名称">
-                <button onclick="addCategory()">添加</button>
-            </div>
-            <div class="edit-form" id="cateEditForm">
-                <h4>修改分类</h4>
-                <input type="hidden" id="editCateId">
-                <input id="editCateName">
-                <button onclick="updateCategory()">保存</button>
-                <button class="sec-btn" onclick="cancelEditCategory()">取消</button>
-            </div>
-            <table class="table">
-                <tr><th>分类名称</th><th>操作</th></tr>
-                <tbody id="cateList"></tbody>
-            </table>
-        </div>
+  <div id="page-cate" class="page active">
+    <div class="card">
+      <div class="form-item"><label>标识</label><input id="ck"></div>
+      <div class="form-item"><label>名称</label><input id="cn"></div>
+      <button class="btn" onclick="saveCate()">保存</button>
     </div>
+    <div class="card"><table class="table" id="clist"></table></div>
+  </div>
 
-    <!-- 产品 -->
-    <div class="page" id="page-product">
-        <div class="card">
-            <h3>添加产品</h3>
-            <select id="p_cate"><option value="">请选择分类</option></select>
-            <input id="p_name" placeholder="产品名称">
-            <div class="upload" onclick="document.getElementById('p_file').click()">选择图片</div>
-            <input type="file" id="p_file" style="display:none" accept="image/*">
-            <div class="preview" id="p_preview"></div>
-            <input id="p_desc" placeholder="简短介绍">
-            <textarea id="p_content" rows="4" placeholder="详细说明"></textarea>
-            <button onclick="addProduct()">添加产品</button>
-        </div>
-        <div class="edit-form" id="productEditForm">
-            <h4>修改产品</h4>
-            <input type="hidden" id="editProductId">
-            <select id="editProductCate"></select>
-            <input id="editProductName">
-            <div class="preview" id="editProductPreview"></div>
-            <div class="upload" onclick="document.getElementById('editProductFile').click()">更换图片</div>
-            <input type="file" id="editProductFile" style="display:none" accept="image/*">
-            <input id="editProductDesc">
-            <textarea id="editProductContent" rows="4"></textarea>
-            <button onclick="updateProduct()">保存</button>
-            <button class="sec-btn" onclick="cancelEditProduct()">取消</button>
-        </div>
-        <div class="card">
-            <h3>产品列表</h3>
-            <table class="table">
-                <tr><th>产品名称</th><th>分类</th><th>简介</th><th>操作</th></tr>
-                <tbody id="p_list"></tbody>
-            </table>
-        </div>
+  <div id="page-product" class="page">
+    <div class="card">
+      <input type="hidden" id="pid">
+      <div class="form-item"><label>产品名</label><input id="pname"></div>
+      <div class="form-item"><label>分类</label><select id="pcate"></select></div>
+      <div class="form-item"><label>图片</label><input type="file" onchange="upPimg()" accept="image/*"><img id="pimg" class="img-preview"></div>
+      <div class="form-item"><label>简介</label><input id="pdesc"></div>
+      <div class="form-item"><label>详情</label><textarea id="pcontent"></textarea></div>
+      <button class="btn" onclick="saveProduct()">保存</button>
     </div>
+    <div class="card"><table class="table" id="plist"></table></div>
+  </div>
 
-    <!-- 新闻 -->
-    <div class="page" id="page-news">
-        <div class="card">
-            <h3>添加新闻</h3>
-            <input id="n_title" placeholder="标题">
-            <div class="upload" onclick="document.getElementById('n_file').click()">选择图片</div>
-            <input type="file" id="n_file" style="display:none" accept="image/*">
-            <div class="preview" id="n_preview"></div>
-            <input id="n_date" placeholder="日期 2026-07-01">
-            <input id="n_desc" placeholder="简介">
-            <textarea id="n_content" rows="5" placeholder="详细内容"></textarea>
-            <button onclick="addNews()">添加新闻</button>
-        </div>
-        <div class="edit-form" id="newsEditForm">
-            <h4>修改新闻</h4>
-            <input type="hidden" id="editNewsId">
-            <div class="preview" id="editNewsPreview"></div>
-            <div class="upload" onclick="document.getElementById('editNewsFile').click()">更换图片</div>
-            <input type="file" id="editNewsFile" style="display:none" accept="image/*">
-            <input id="editNewsTitle">
-            <input id="editNewsDate">
-            <input id="editNewsDesc">
-            <textarea id="editNewsContent" rows="5"></textarea>
-            <button onclick="updateNews()">保存</button>
-            <button class="sec-btn" onclick="cancelEditNews()">取消</button>
-        </div>
-        <div class="card">
-            <h3>新闻列表</h3>
-            <table class="table">
-                <tr><th>新闻标题</th><th>日期</th><th>操作</th></tr>
-                <tbody id="n_list"></tbody>
-            </table>
-        </div>
+  <div id="page-news" class="page">
+    <div class="card">
+      <input type="hidden" id="nid">
+      <div class="form-item"><label>标题</label><input id="ntitle"></div>
+      <div class="form-item"><label>图片</label><input type="file" onchange="upNimg()" accept="image/*"><img id="nimg" class="img-preview"></div>
+      <div class="form-item"><label>日期</label><input id="ndate"></div>
+      <div class="form-item"><label>简介</label><input id="ndesc"></div>
+      <div class="form-item"><label>详情</label><textarea id="ncontent"></textarea></div>
+      <button class="btn" onclick="saveNews()">保存</button>
     </div>
-
+    <div class="card"><table class="table" id="nlist"></table></div>
+  </div>
 </div>
 
 <script>
-let pImg, nImg, editPImg, editNImg;
+const USER="admin",PWD="yuhao123";
+function login(){let u=document.getElementById("user").value,p=document.getElementById("pwd").value;if(u==USER&&p==PWD){document.getElementById("loginMask").style.display="none";document.getElementById("main").style.display="block";loadAll();}else alert("账号密码错误")}
+function go(p){document.querySelectorAll(".page").forEach(e=>e.classList.remove("active"));document.querySelectorAll(".tab").forEach(e=>e.classList.remove("active"));document.getElementById("page-"+p).classList.add("active");event.target.classList.add("active");loadAll()}
+function g(k){return JSON.parse(localStorage.getItem(k)||"[]")}
+function s(k,d){localStorage.setItem(k,JSON.stringify(d))}
 
-function login() {
-    const u = document.getElementById('user').value;
-    const pw = document.getElementById('pwd').value;
-    if (u === 'admin' && pw === 'yuhao123') {
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('navbar').style.display = 'flex';
-        document.getElementById('container').style.display = 'block';
-        refreshAll();
-    } else {
-        alert('账号或密码错误');
-    }
-}
+function exportData(){let d={cate:g("cate"),product:g("product"),news:g("news")};document.getElementById("result").value=JSON.stringify(d,null,2);alert("复制后替换 index.html 里的 SITE_DATA 即可")}
 
-function switchPage(page) {
-    document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    const navArr = [...document.querySelectorAll('.nav-item')];
-    let targetIdx = 0;
-    if(page === 'cate') targetIdx = 0;
-    if(page === 'product') targetIdx = 1;
-    if(page === 'news') targetIdx = 2;
-    navArr[targetIdx].classList.add('active');
-}
+function upPimg(){let f=event.target.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{localStorage.setItem("tmpPimg",e.target.result);document.getElementById("pimg").src=e.target.result;document.getElementById("pimg").style.display="block"};r.readAsDataURL(f)}
+function upNimg(){let f=event.target.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{localStorage.setItem("tmpNimg",e.target.result);document.getElementById("nimg").src=e.target.result;document.getElementById("nimg").style.display="block"};r.readAsDataURL(f)}
 
-function toBase64(file, cb, previewId) {
-    const r = new FileReader();
-    r.onload = e => {
-        cb(e.target.result);
-        if (previewId) document.getElementById(previewId).innerHTML = `<img src="${e.target.result}">`;
-    };
-    r.readAsDataURL(file);
-}
+function saveCate(){let k=document.getElementById("ck").value,n=document.getElementById("cn").value;if(!k||!n)return;let l=g("cate");l.push({key:k,name:n});s("cate",l);document.getElementById("ck").value="";document.getElementById("cn").value="";loadCate()}
+function loadCate(){let l=g("cate");let sel=document.getElementById("pcate");sel.innerHTML="";l.forEach(i=>{sel.innerHTML+=`<option value="${i.key}">${i.name}</option>`});let t=document.getElementById("clist");let h="";l.forEach((i,idx)=>{h+=`<tr><td>${i.key}</td><td>${i.name}</td><td><button class="btn btn-danger" onclick="delCate(${idx})">删</button></td></tr>`});t.innerHTML=h}
+function delCate(idx){let l=g("cate");l.splice(idx,1);s("cate",l);loadCate()}
 
-function get(k) { return JSON.parse(localStorage.getItem(k) || '[]') }
-function set(k, d) { localStorage.setItem(k, JSON.stringify(d)) }
+function saveProduct(){let id=document.getElementById("pid").value,name=document.getElementById("pname").value,cate=document.getElementById("pcate").value,img=localStorage.getItem("tmpPimg")||"",desc=document.getElementById("pdesc").value,content=document.getElementById("pcontent").value;if(!name||!cate)return;let l=g("product");if(id){let i=l.findIndex(x=>x.id==id);l[i]={id,name,cate,img,desc,content}}else{let newId=l.length?Math.max(...l.map(x=>x.id))+1:1;l.push({id:newId,name,cate,img,desc,content})}s("product",l);clearP();loadPro()}
+function editP(id){let d=g("product").find(x=>x.id==id);document.getElementById("pid").value=d.id;document.getElementById("pname").value=d.name;document.getElementById("pcate").value=d.cate;localStorage.setItem("tmpPimg",d.img);document.getElementById("pimg").src=d.img;document.getElementById("pimg").style.display="block";document.getElementById("pdesc").value=d.desc;document.getElementById("pcontent").value=d.content}
+function delP(id){let l=g("product");s("product",l.filter(x=>x.id!=id));loadPro()}
+function clearP(){document.getElementById("pid").value="";document.getElementById("pname").value="";localStorage.removeItem("tmpPimg");document.getElementById("pimg").style.display="none";document.getElementById("pdesc").value="";document.getElementById("pcontent").value=""}
+function loadPro(){let l=g("product");let t=document.getElementById("plist");let h="";l.forEach(d=>{h+=`<tr><td>${d.name}</td><td>${d.desc}</td><td><button class="btn" onclick="editP(${d.id})">编</button><button class="btn btn-danger" onclick="delP(${d.id})">删</button></td></tr>`});t.innerHTML=h}
 
-// 分类
-function addCategory() {
-    const name = document.getElementById('cateName').value.trim();
-    if (!name) return alert('请输入名称');
-    const list = get('categories');
-    if (list.some(c => c.name === name)) return alert('已存在');
-    list.push({ id: Date.now(), name });
-    set('categories', list);
-    document.getElementById('cateName').value = '';
-    refreshAll();
-}
-function editCategory(id) {
-    const c = get('categories').find(x => x.id == id);
-    document.getElementById('editCateId').value = c.id;
-    document.getElementById('editCateName').value = c.name;
-    document.getElementById('cateEditForm').style.display = 'block';
-}
-function updateCategory() {
-    const id = document.getElementById('editCateId').value;
-    const newName = document.getElementById('editCateName').value.trim();
-    if (!newName) return;
-    const list = get('categories');
-    const old = list.find(c => c.id == id);
-    list.find(c => c.id == id).name = newName;
-    set('categories', list);
-    const pros = get('products').map(p => {
-        if (p.category === old.name) p.category = newName;
-        return p;
-    });
-    set('products', pros);
-    cancelEditCategory();
-    refreshAll();
-}
-function cancelEditCategory() { document.getElementById('cateEditForm').style.display = 'none'; }
-function delCate(id) {
-    if (!confirm('确定删除？')) return;
-    set('categories', get('categories').filter(c => c.id != id));
-    refreshAll();
-}
+function saveNews(){let id=document.getElementById("nid").value,title=document.getElementById("ntitle").value,img=localStorage.getItem("tmpNimg")||"",date=document.getElementById("ndate").value,desc=document.getElementById("ndesc").value,content=document.getElementById("ncontent").value;if(!title)return;let l=g("news");if(id){let i=l.findIndex(x=>x.id==id);l[i]={id,title,img,date,desc,content}}else{let newId=l.length?Math.max(...l.map(x=>x.id))+1:1;l.push({id:newId,title,img,date,desc,content})}s("news",l);clearN();loadNews()}
+function editN(id){let d=g("news").find(x=>x.id==id);document.getElementById("nid").value=d.id;document.getElementById("ntitle").value=d.title;localStorage.setItem("tmpNimg",d.img);document.getElementById("nimg").src=d.img;document.getElementById("nimg").style.display="block";document.getElementById("ndate").value=d.date;document.getElementById("ndesc").value=d.desc;document.getElementById("ncontent").value=d.content}
+function delN(id){let l=g("news");s("news",l.filter(x=>x.id!=id));loadNews()}
+function clearN(){document.getElementById("nid").value="";document.getElementById("ntitle").value="";localStorage.removeItem("tmpNimg");document.getElementById("nimg").style.display="none";document.getElementById("ndate").value="";document.getElementById("ndesc").value="";document.getElementById("ncontent").value=""}
+function loadNews(){let l=g("news");let t=document.getElementById("nlist");let h="";l.forEach(d=>{h+=`<tr><td>${d.title}</td><td>${d.date}</td><td><button class="btn" onclick="editN(${d.id})">编</button><button class="btn btn-danger" onclick="delN(${d.id})">删</button></td></tr>`});t.innerHTML=h}
 
-// 产品
-function addProduct() {
-    const cate = document.getElementById('p_cate').value;
-    const name = document.getElementById('p_name').value.trim();
-    const desc = document.getElementById('p_desc').value.trim();
-    const content = document.getElementById('p_content').value.trim();
-    if (!name || !pImg) return alert('请填写名称并上传图片');
-    const list = get('products');
-    list.push({ id: Date.now(), name, category: cate, img: pImg, desc, content });
-    set('products', list);
-    document.getElementById('p_name').value = '';
-    document.getElementById('p_desc').value = '';
-    document.getElementById('p_content').value = '';
-    document.getElementById('p_preview').innerHTML = '';
-    pImg = null;
-    refreshAll();
-}
-function editProduct(id) {
-    const p = get('products').find(x => x.id == id);
-    document.getElementById('editProductId').value = p.id;
-    document.getElementById('editProductName').value = p.name;
-    document.getElementById('editProductDesc').value = p.desc;
-    document.getElementById('editProductContent').value = p.content || '';
-    document.getElementById('editProductPreview').innerHTML = `<img src="${p.img}">`;
-    editPImg = p.img;
-    const opts = get('categories').map(c => `<option value="${c.name}" ${c.name==p.category?'selected':''}>${c.name}</option>`).join('');
-    document.getElementById('editProductCate').innerHTML = `<option value="">请选择分类</option>` + opts;
-    document.getElementById('productEditForm').style.display = 'block';
-}
-function updateProduct() {
-    const id = document.getElementById('editProductId').value;
-    const name = document.getElementById('editProductName').value.trim();
-    const cate = document.getElementById('editProductCate').value;
-    const desc = document.getElementById('editProductDesc').value.trim();
-    const content = document.getElementById('editProductContent').value.trim();
-    const list = get('products');
-    const i = list.findIndex(x => x.id == id);
-    list[i] = { ...list[i], name, category: cate, img: editPImg, desc, content };
-    set('products', list);
-    cancelEditProduct();
-    refreshAll();
-}
-function cancelEditProduct() { document.getElementById('productEditForm').style.display = 'none'; }
-function delProduct(id) {
-    if (!confirm('确定删除？')) return;
-    set('products', get('products').filter(x => x.id != id));
-    refreshAll();
-}
-
-// 新闻
-function addNews() {
-    const title = document.getElementById('n_title').value.trim();
-    const date = document.getElementById('n_date').value.trim();
-    const desc = document.getElementById('n_desc').value.trim();
-    const content = document.getElementById('n_content').value.trim();
-    if (!title || !nImg) return alert('请填写标题并上传图片');
-    const list = get('news');
-    list.push({ id: Date.now(), title, img: nImg, date, desc, content });
-    set('news', list);
-    document.getElementById('n_title').value = '';
-    document.getElementById('n_date').value = '';
-    document.getElementById('n_desc').value = '';
-    document.getElementById('n_content').value = '';
-    document.getElementById('n_preview').innerHTML = '';
-    nImg = null;
-    refreshAll();
-}
-function editNews(id) {
-    const n = get('news').find(x => x.id == id);
-    document.getElementById('editNewsId').value = n.id;
-    document.getElementById('editNewsTitle').value = n.title;
-    document.getElementById('editNewsDate').value = n.date;
-    document.getElementById('editNewsDesc').value = n.desc;
-    document.getElementById('editNewsContent').value = n.content || '';
-    document.getElementById('editNewsPreview').innerHTML = `<img src="${n.img}">`;
-    editNImg = n.img;
-    document.getElementById('newsEditForm').style.display = 'block';
-}
-function updateNews() {
-    const id = document.getElementById('editNewsId').value;
-    const title = document.getElementById('editNewsTitle').value.trim();
-    const date = document.getElementById('editNewsDate').value.trim();
-    const desc = document.getElementById('editNewsDesc').value.trim();
-    const content = document.getElementById('editNewsContent').value.trim();
-    const list = get('news');
-    const i = list.findIndex(x => x.id == id);
-    list[i] = { ...list[i], title, date, desc, content, img: editNImg };
-    set('news', list);
-    cancelEditNews();
-    refreshAll();
-}
-function cancelEditNews() { document.getElementById('newsEditForm').style.display = 'none'; }
-function delNews(id) {
-    if (!confirm('确定删除？')) return;
-    set('news', get('news').filter(x => x.id != id));
-    refreshAll();
-}
-
-document.getElementById('p_file').onchange = e => toBase64(e.target.files[0], d => pImg = d, 'p_preview');
-document.getElementById('n_file').onchange = e => toBase64(e.target.files[0], d => nImg = d, 'n_preview');
-document.getElementById('editProductFile').onchange = e => toBase64(e.target.files[0], d => editPImg = d, 'editProductPreview');
-document.getElementById('editNewsFile').onchange = e => toBase64(e.target.files[0], d => editNImg = d, 'editNewsPreview');
-
-function refreshAll() {
-    const cates = get('categories');
-    const pros = get('products');
-    const news = get('news');
-
-    document.getElementById('cateList').innerHTML = cates.map(c => `
-    <tr>
-        <td>${c.name}</td>
-        <td>
-            <button class="edit" onclick="editCategory(${c.id})">修改</button>
-            <button class="del" onclick="delCate(${c.id})">删除</button>
-        </td>
-    </tr>`).join('');
-
-    const cateOpts = cates.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-    document.getElementById('p_cate').innerHTML = `<option value="">请选择分类</option>` + cateOpts;
-
-    document.getElementById('p_list').innerHTML = pros.map(p => `
-    <tr>
-        <td>${p.name}</td>
-        <td>${p.category || '未分类'}</td>
-        <td>${p.desc}</td>
-        <td>
-            <button class="edit" onclick="editProduct(${p.id})">修改</button>
-            <button class="del" onclick="delProduct(${p.id})">删除</button>
-        </td>
-    </tr>`).join('');
-
-    document.getElementById('n_list').innerHTML = news.map(n => `
-    <tr>
-        <td>${n.title}</td>
-        <td>${n.date}</td>
-        <td>
-            <button class="edit" onclick="editNews(${n.id})">修改</button>
-            <button class="del" onclick="delNews(${n.id})">删除</button>
-        </td>
-    </tr>`).join('');
-}
+function loadAll(){loadCate();loadPro();loadNews()}
 </script>
 </body>
 </html>

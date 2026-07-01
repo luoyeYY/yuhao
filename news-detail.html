@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新闻详情</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei;}
+:root{--main:#0969a8;}
+body{background:#f5f7fa;padding:20px;}
+.container{max-width:900px;margin:0 auto;background:#fff;border-radius:12px;padding:40px;box-shadow:0 3px 15px rgba(0,0,0,0.08);}
+.back{margin-bottom:20px;}
+.back a{color:var(--main);text-decoration:none;}
+.news-img{width:100%;max-height:400px;object-fit:cover;border-radius:12px;margin-bottom:20px;min-height:200px;background:#eee;}
+.news-title{font-size:26px;margin-bottom:10px;color:#222;}
+.news-date{color:#999;font-size:14px;margin-bottom:20px;}
+.news-content{line-height:1.9;color:#444;font-size:16px;white-space:pre-line;}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="back"><a href="index.html#news">← 返回新闻列表</a></div>
+<div id="detail"></div>
+</div>
+
+<script>
+const id = new URLSearchParams(location.search).get('id')
+const d = JSON.parse(localStorage.getItem('SITE_DATA')||'{"news":[]}')
+const n = (d.news||[]).find(x=>x.id==id)||{title:'无',date:'',img:'',content:'无'}
+
+document.getElementById('detail').innerHTML = `
+  <img class="news-img" src="${n.img}" alt="${n.title}">
+  <h1 class="news-title">${n.title}</h1>
+  <div class="news-date">${n.date}</div>
+  <div class="news-content">${n.content}</div>
+`
+</script>
+</body>
+</html>
